@@ -15,12 +15,11 @@ public class PowerUpBase : ItemCollactableBase
 
     protected virtual void StartPowerUp()
     {
-        Debug.Log("Start PowerUp");
         Invoke(nameof(EndPowerUp), duration);
     }
 
     protected virtual void EndPowerUp()
     {
-        Debug.Log("End PowerUp");
+     
     }
 }

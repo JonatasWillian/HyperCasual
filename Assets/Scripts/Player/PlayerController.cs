@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Core.Singleton;
+using TMPro;
+using DG.Tweening;
 
 public class PlayerController : Singleton<PlayerController>
 {
@@ -18,12 +20,23 @@ public class PlayerController : Singleton<PlayerController>
 
     public GameObject endScreen;
 
+    [Header("Text")]
+    public TextMeshPro uiTextPowerUp;
+
+    [Header("Coin Collector")]
+    public GameObject coinCollector;
+
+    public bool invencible = true;
+
     private bool _canRun;
     private Vector3 _pos;
     private float _currentSpeed;
+    private Vector3 _startPosition;
+
 
     private void Start()
     {
+        _startPosition = transform.position;
         ResetSpeed();
     }
 
@@ -43,7 +56,7 @@ public class PlayerController : Singleton<PlayerController>
     {
         if (collision.transform.CompareTag(tagEnemy))
         {
-            EndGame();
+            if(!invencible) EndGame();
         }
     }
 
@@ -55,7 +68,7 @@ public class PlayerController : Singleton<PlayerController>
         }
     }
 
-    private void EndGame()
+    private void EndGame(bool b = true)
     {
         endScreen.SetActive(true);
         _canRun = false;
@@ -67,6 +80,11 @@ public class PlayerController : Singleton<PlayerController>
     }
 
     #region PowerUps
+    public void SetPowerText(string s)
+    {
+        uiTextPowerUp.text = s;
+    }
+
     public void PowerUpSpeedUp(float f)
     {
         _currentSpeed = f;
@@ -75,6 +93,40 @@ public class PlayerController : Singleton<PlayerController>
     public void ResetSpeed()
     {
         _currentSpeed = speed;
+    }
+
+    public void SetInvencible(bool b = true)
+    {
+        invencible = b;
+    }
+
+    public void ChangeHeight(float amount, float duration, float animationDuration, Ease ease)
+    {
+        //var p = transform.position;
+        //p.y = _startPosition.y + amount;
+        //transform.position = p;
+
+        transform.DOMoveY(_startPosition.y + amount, animationDuration).SetEase(ease);
+        Invoke(nameof(ResetHeight), duration);
+    }
+
+    public void ResetHeight()
+    {
+        transform.DOMoveY(_startPosition.y, .1f);
+        StartCoroutine(ResetText());
+    }
+
+    public float durationCoroutine = .6f;
+
+    IEnumerator ResetText()
+    {
+        yield return new WaitForSeconds(durationCoroutine);
+        PlayerController.Instance.SetPowerText("");
+    }
+
+    public void ChangeCoiCollectorSize(float amount)
+    {
+        coinCollector.transform.localScale = Vector3.one * amount;
     }
     #endregion
 }
