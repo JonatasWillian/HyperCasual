@@ -91,7 +91,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            spawnedPieces.transform.position = Vector3.zero;
+            spawnedPieces.transform.localPosition = Vector3.zero;
         }
 
         foreach (var p in spawnedPieces.GetComponentsInChildren<ArtPieces>())
